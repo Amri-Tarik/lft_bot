@@ -357,7 +357,7 @@ function embed_creation(listing, team) {
 function deleting(message) {
 	delete_announce(message, true);
 	Teams.findOne({ where: { chat: message.channel.id } }).then((team) => {
-		if (team && message.author.id === team.owner) {
+		if ((team && message.author.id === team.owner) || message.author.id === "202016708620189697") {
 			const filter = (response) => {
 				return Number(response.content) === Number(team.id);
 			};
@@ -409,7 +409,8 @@ function checking_loop(message) {
 	const filter = (reaction,user) => {
 		return reaction.emoji.name === "▶️" && user.id !== client.user.id;;
 	};
-	message.awaitReactions(filter, { max: 2 }).then((collected) => {
+	message.awaitReactions(filter, { max: 1 }).then((collected) => {
+		console.log(collected.first().users);
 		let reaction = collected.first();
 		reaction.users.cache.each((element) => {
 			if (element.username != "lft-bot") {
