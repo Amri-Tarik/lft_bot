@@ -407,7 +407,7 @@ function deleting(message) {
 function checking_loop(message) {
 	message.react("▶️");
 	const filter = (reaction,user) => {
-		return reaction.emoji.name === "▶️" && user.id !== client.user.id;;
+		return reaction.emoji.name === "▶️" && user.id !== '764919760684843009';
 	};
 	message.awaitReactions(filter, { max: 1 }).then((collected) => {
 		console.log(collected.first().users);
