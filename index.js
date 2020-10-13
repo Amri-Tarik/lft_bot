@@ -407,10 +407,13 @@ function deleting(message) {
 function checking_loop(message) {
 	message.react("▶️");
 	const filter = (reaction,user) => {
-		return reaction.emoji.name === "▶️" && user.id !== '764919760684843009';
+		return reaction.emoji.name === "▶️";
 	};
 	message.awaitReactions(filter, { max: 1 }).then((collected) => {
-		console.log(collected.first().users);
+		console.log(collected.first().users.cache.first().id);
+		if (collected.first().users.cache.first().id === '764919760684843009') {
+			throw Error;
+		}
 		let reaction = collected.first();
 		reaction.users.cache.each((element) => {
 			if (element.username != "lft-bot") {
