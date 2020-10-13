@@ -487,6 +487,7 @@ function team_creation(element, guild_id) {
 										guild.channels
 											.create(`team-${team_id}-voice`, {
 												parent: channel,
+												type: "voice",
 											})
 											.then((channel4) => {
 												team_data.voice_chat = String(
