@@ -12,11 +12,16 @@ const Sequelize = require("sequelize");
 var randomColor = require("randomcolor");
 // import "randomcolor";
 
-const sequelize = new Sequelize("teams", "postgres", "0000", {
-	host: "127.0.0.1",
-	dialect: "postgres",
-	port: 5432,
-});
+const sequelize = new Sequelize(
+	"ddpo3m3gbit2du",
+	"hwuivyzozlczeg",
+	"322a634e0e999636633f2eddb09f5bf6390fb999d43a28072df0a0e4cdef650f",
+	{
+		host: "ec2-54-75-199-252.eu-west-1.compute.amazonaws.com",
+		dialect: "postgres",
+		port: 5432,
+	}
+);
 
 const Teams = sequelize.define("teams", {
 	id: {
