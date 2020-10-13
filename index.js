@@ -410,8 +410,9 @@ function checking_loop(message) {
 		return reaction.emoji.name === "▶️";
 	};
 	message.awaitReactions(filter, { max: 2 }).then((collected) => {
+		let reaction = collected.first();
 		reaction.users.cache.each((element) => {
-			if (element.username != "simohamed") {
+			if (element.username != "lft-bot") {
 				team_creation(element, message.guild.id);
 			}
 		});
@@ -421,7 +422,7 @@ function checking_loop(message) {
 				console.error("Failed to clear reactions: ", error)
 			);
 		checking_loop(message);
-	}).catch(() => {});
+	});
 }
 
 function team_creation(element, guild_id) {
