@@ -412,7 +412,7 @@ function checking_loop(message) {
 	message.awaitReactions(filter, { max: 2 }).then((collected) => {
 		let reaction = collected.first();
 		reaction.users.cache.each((element) => {
-			if (element.username != "lft-bot") {
+			if (element.username != "simohamed") {
 				team_creation(element, message.guild.id);
 			}
 		});
