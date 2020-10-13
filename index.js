@@ -409,7 +409,7 @@ function checking_loop(message) {
 	const filter = (reaction,user) => {
 		return reaction.emoji.name === "▶️";
 	};
-	message.awaitReactions(filter, { max: 1 }).then((collected) => {
+	message.awaitReactions(filter, { max: 2 }).then((collected) => {
 		console.log(collected.first().users.cache.first().id);
 		if (collected.first().users.cache.first().id === '764919760684843009') {
 			throw Error;
@@ -426,7 +426,7 @@ function checking_loop(message) {
 				console.error("Failed to clear reactions: ", error)
 			);
 		checking_loop(message);
-	});
+	}).catch(() => {});
 }
 
 function team_creation(element, guild_id) {
