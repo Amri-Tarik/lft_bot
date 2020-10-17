@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@replit/database": "^2.0.0",
     "discord.js": "^12.3.1",
     "randomcolor": "^0.6.2",
     "sequelize": "^6.3.5"

@@ -6,59 +6,20 @@ const channel_id = process.env.CHANNEL_ID;
 const message_id = process.env.MESSAGE_ID;
 const recruit_id = process.env.RECRUIT_ID;
 const client = new Discord.Client();
-const Sequelize = require("sequelize");
 var randomColor = require("randomcolor");
+const Database = require("@replit/database");
+const db = new Database();
 // import "randomcolor";
 
-const sequelize = new Sequelize(
-	"ddpo3m3gbit2du",
-	"hwuivyzozlczeg",
-	"322a634e0e999636633f2eddb09f5bf6390fb999d43a28072df0a0e4cdef650f",
-	{
-		host: "ec2-54-75-199-252.eu-west-1.compute.amazonaws.com",
-		dialect: "postgres",
-		port: 5432,
-	}
-);
-
-const Teams = sequelize.define("teams", {
-	id: {
-		type: Sequelize.INTEGER,
-		autoIncrement: true,
-		unique: true,
-		allowNull: false,
-		primaryKey: true,
-	},
-	chat: {
-		type: Sequelize.STRING,
-	},
-	ressource_chat: {
-		type: Sequelize.STRING,
-	},
-	voice_chat: {
-		type: Sequelize.STRING,
-	},
-	category: {
-		type: Sequelize.STRING,
-	},
-	owner: {
-		type: Sequelize.STRING,
-	},
-	role: {
-		type: Sequelize.STRING,
-	},
-	embed: {
-		type: Sequelize.STRING,
-	},
-});
-
 client.once("ready", () => {
-	Teams.sync();
 	client.guilds.cache
 		.get(guild_id)
 		.channels.cache.get(channel_id)
 		.messages.fetch(message_id)
-		.then((message) => checking_loop(message));
+		.then((message) => {
+			checking_loop(message);
+			console.log(message.channel.name);
+		});
 	console.log("Ready!");
 });
 
@@ -79,7 +40,7 @@ client.on("message", (message) => {
 });
 
 function kick_user(message) {
-	Teams.findOne({ where: { chat: message.channel.id } }).then((team) => {
+	db.get(message.channel.name.replace("team-", "")).then((team) => {
 		if (team && message.author.id === team.owner) {
 			nickname = message.content.replace(`${prefix} kick `, "");
 			client.guilds.cache.get(guild_id).members.fetch();
@@ -107,7 +68,7 @@ function kick_user(message) {
 }
 
 function invite_user(message) {
-	Teams.findOne({ where: { chat: message.channel.id } }).then((team) => {
+	db.get(message.channel.name.replace("team-", "")).then((team) => {
 		if (team) {
 			nickname = message.content.replace(`${prefix} invite `, "");
 			client.guilds.cache.get(guild_id).members.fetch();
@@ -131,14 +92,15 @@ function invite_user(message) {
 }
 
 function delete_announce(message, chnldel = false) {
-	Teams.findOne({ where: { chat: message.channel.id } }).then((team) => {
+	db.get(message.channel.name.replace("team-", "")).then((team) => {
 		if (team && team.embed) {
 			client.guilds.cache
 				.get(guild_id)
 				.channels.cache.get(recruit_id)
 				.messages.fetch(team.embed)
 				.then((message) => message.delete());
-			Teams.update({ embed: null }, { where: { id: team.id } });
+			team.embed = null;
+			db.set(team.id, team);
 			message.reply("votre annonce a été supprimé");
 		} else if (!team.embed && !chnldel) {
 			message.reply("aucune annonce n'a été trouvée");
@@ -152,7 +114,7 @@ function delete_announce(message, chnldel = false) {
 
 function announcement(message) {
 	delete_announce(message, true);
-	Teams.findOne({ where: { chat: message.channel.id } }).then((team) => {
+	db.get(message.channel.name.replace("team-", "")).then((team) => {
 		if (team) {
 			let recruting = [];
 			const filter = () => {
@@ -344,17 +306,15 @@ function embed_creation(listing, team) {
 				.channels.cache.get(recruit_id)
 				.send(exampleEmbed)
 				.then((message) => {
-					Teams.update(
-						{ embed: String(message.id) },
-						{ where: { id: team.id } }
-					);
+					team.embed = message.id;
+					db.set(team.id, team);
 				});
 		});
 }
 
 function deleting(message) {
 	delete_announce(message, true);
-	Teams.findOne({ where: { chat: message.channel.id } }).then((team) => {
+	db.get(message.channel.name.replace("team-", "")).then((team) => {
 		if (
 			(team && message.author.id === team.owner) ||
 			message.author.id === "202016708620189697"
@@ -385,7 +345,7 @@ function deleting(message) {
 							guild.channels.cache.get(team.voice_chat).delete();
 							guild.channels.cache.get(team.category).delete();
 							guild.roles.cache.get(team.role).delete();
-							Teams.destroy({ where: { id: team.id } });
+							db.delete(team.id);
 						})
 						.catch((collected) => {
 							message.channel.send(
@@ -440,11 +400,8 @@ function team_creation(element, guild_id) {
 	let guildmember = guild.members.cache.get(element.id);
 	team_data.owner = String(guildmember.id);
 	team_data.members = [guildmember.id];
-	Teams.findAll({
-		limit: 1,
-		order: [["id", "DESC"]],
-	}).then((entries) => {
-		team_id = entries[0].id + 1;
+	db.get(0).then((entry) => {
+		team_id = entry.id + 1;
 		team_data.id = Number(team_id);
 		const everyone = guild.roles.cache.get(guild.id);
 		guild.roles
@@ -494,9 +451,8 @@ function team_creation(element, guild_id) {
 												team_data.voice_chat = String(
 													channel4.id
 												);
-												const team = Teams.create(
-													team_data
-												);
+												db.set(team_data.id, team_data);
+												db.set(0, { id: team_id });
 												guildmember.send(
 													`Hey ${guildmember.nickname}, ta team a été créée avec le nombre ${team_data.id}. vous trouverez un chat appelé Team-${team_data.id} dans le serveur qui contiendra les commandes necessaire pour gérer ta team, recruter des gens et plus...`
 												);
