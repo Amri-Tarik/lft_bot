@@ -1,12 +1,10 @@
 const Discord = require("discord.js");
-const {
-	prefix,
-	token,
-	guild_id,
-	channel_id,
-	message_id,
-	recruit_id,
-} = require("./config.json");
+const prefix = process.env.PREFIX;
+const token = process.env.TOKEN;
+const guild_id = process.env.GUILD_ID;
+const channel_id = process.env.CHANNEL_ID;
+const message_id = process.env.MESSAGE_ID;
+const recruit_id = process.env.RECRUIT_ID;
 const client = new Discord.Client();
 const Sequelize = require("sequelize");
 var randomColor = require("randomcolor");
@@ -357,7 +355,10 @@ function embed_creation(listing, team) {
 function deleting(message) {
 	delete_announce(message, true);
 	Teams.findOne({ where: { chat: message.channel.id } }).then((team) => {
-		if ((team && message.author.id === team.owner) || message.author.id === "202016708620189697") {
+		if (
+			(team && message.author.id === team.owner) ||
+			message.author.id === "202016708620189697"
+		) {
 			const filter = (response) => {
 				return Number(response.content) === Number(team.id);
 			};
@@ -518,3 +519,10 @@ function team_creation(element, guild_id) {
 }
 
 client.login(token);
+
+const http = require("http");
+const server = http.createServer((req, res) => {
+	res.writeHead(200);
+	res.end("ok");
+});
+server.listen(3000);
