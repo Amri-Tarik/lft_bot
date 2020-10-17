@@ -18,7 +18,6 @@ client.once("ready", () => {
 		.messages.fetch(message_id)
 		.then((message) => {
 			checking_loop(message);
-			console.log(message.channel.name);
 		});
 	console.log("Ready!");
 });
@@ -276,7 +275,6 @@ function embed_creation(listing, team) {
 					return element;
 				}
 			});
-			console.log(owner.user.avatarURL);
 			const exampleEmbed = new Discord.MessageEmbed()
 				.setColor(randomColor())
 				.setTitle(`Team ${team.id} recrute !`)
