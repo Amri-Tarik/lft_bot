@@ -50,9 +50,17 @@ function kick_user(message) {
 				member.roles.remove(team.role);
 				message.reply(`${member.nickname} kicked from the team`);
 			} else {
-				message.reply(
-					"je n'ai pas trouvé cet utilisateur, reverifie le nom avec les majusqules et les symboles, sinon contactez le staff pour qu'il le vire manuellement."
-				);
+        member = client.guilds.cache
+				.get(guild_id)
+				.members.cache.find((member) => member.user.username === nickname);
+        if (member) {
+				  member.roles.remove(team.role);
+			  	message.reply(`${nickname} kicked from the team`);
+			  } else {
+			  	message.reply(
+				  	"je n'ai pas trouvé cet utilisateur, reverifie le nom avec les majusqules et les symboles, sinon contactez le staff pour qu'il le vire manuellement."
+				  );
+      }
 			}
 		} else if (team && message.author.id !== team.owner) {
 			message.reply(
@@ -78,9 +86,17 @@ function invite_user(message) {
 				member.roles.add(team.role);
 				message.channel.send(`mr7ba b ${member} f team`);
 			} else {
-				message.reply(
+        member = client.guilds.cache
+				.get(guild_id)
+				.members.cache.find((member) => member.user.username === nickname);
+        if (member) {
+				  member.roles.add(team.role);
+			  	message.channel.send(`mr7ba b ${member} f team`);
+        } else {
+          message.reply(
 					"je n'ai pas trouvé cet utilisateur, reverifie le nom avec les majusqules et les symboles, sinon contactez le staff pour qu'il l'ajoute manuellement. "
 				);
+        }
 			}
 		} else {
 			message.reply(
