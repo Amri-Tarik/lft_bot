@@ -19,7 +19,7 @@ client.once("ready", () => {
 		.then((message) => {
 			checking_loop(message);
 		});
-	console.log("Ready!");
+	console.log("Ready!")
 });
 
 client.on("message", (message) => {
@@ -42,11 +42,8 @@ function kick_user(message) {
 	db.get(message.channel.name.replace("team-", "")).then((team) => {
 		if (team && message.author.id === team.owner) {
 			nickname = message.content.replace(`${prefix} kick `, "");
-			client.guilds.cache.get(guild_id).members.fetch()
-				.then((thing) => console.log(thing));
-				member = client.guilds.cache
-					.get(guild_id)
-					.members.cache.find((member) => member.nickname === nickname);
+			member = client.guilds.cache.get(guild_id).members.fetch({query: nickname, limit : 1}).then((member) => {
+				member = member.first();
 				if (member) {
 					member.roles.remove(team.role);
 					message.reply(`${member.nickname} kicked from the team`);
@@ -62,7 +59,7 @@ function kick_user(message) {
 						"je n'ai pas trouvé cet utilisateur, reverifie le nom avec les majusqules et les symboles, sinon contactez le staff pour qu'il le vire manuellement."
 						);
 			}
-				} ;
+				} ; })
 		} else if (team && message.author.id !== team.owner) {
 			message.reply(
 				"seul le créateur de cette team peut utiliser cette commande"
@@ -79,11 +76,8 @@ function invite_user(message) {
 	db.get(message.channel.name.replace("team-", "")).then((team) => {
 		if (team) {
 			nickname = message.content.replace(`${prefix} invite `, "");
-			client.guilds.cache.get(guild_id).members.fetch()
-				.then((thing) => console.log(thing));
-			member = client.guilds.cache
-				.get(guild_id)
-				.members.cache.find((member) => member.nickname === nickname);
+			client.guilds.cache.get(guild_id).members.fetch({query: nickname, limit : 1}).then((member) => {
+				member = member.first();
 			if (member) {
 				member.roles.add(team.role);
 				message.channel.send(`mr7ba b ${member} f team`);
@@ -99,7 +93,7 @@ function invite_user(message) {
 					"je n'ai pas trouvé cet utilisateur, reverifie le nom avec les majusqules et les symboles, sinon contactez le staff pour qu'il l'ajoute manuellement. "
 				);
         }
-			}
+			} })
 		} else {
 			message.reply(
 				"cette commande doit être utilisée dans le chat Team"
