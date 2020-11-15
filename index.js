@@ -35,8 +35,17 @@ client.on("message", (message) => {
 		invite_user(message);
 	} else if (message.content.startsWith(prefix + " kick")) {
 		kick_user(message);
-	} else if (message.content.startsWith("we simohamed lo7 chi meme")) {
-		message.channel.send("OUAQUAD_1.3.6");
+	} else if (message.content.startsWith("simo, 3tini chi projet")) {
+		const https = require('https');
+		https.get('https://itsthisforthat.com/api.php?text', (resp) => {
+			let data = "";
+			resp.on('data', (chunk) => {
+				data += chunk;
+			});
+			resp.on('end', () => {
+				message.channel.send(data);
+			});
+		})
 	}
 });
 
